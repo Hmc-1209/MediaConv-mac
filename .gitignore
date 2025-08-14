@@ -39,3 +39,26 @@
 
 # debug information files
 *.dwo
+
+# Build artifacts
+build/
+cmake-build-debug/
+
+# CMake intermediate files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# IDE files
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# OS specific
+.DS_Store
