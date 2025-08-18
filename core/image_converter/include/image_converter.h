@@ -2,7 +2,7 @@
 #define IMAGE_CONVERTER_H
 
 extern "C" {
-    void reformat_image(const char* input_path, const char* output_ext);
+    int reformat_image(const char* input_path, const char* output_ext);
     void resize_image();
     void crop_image();
     void rotate_image();

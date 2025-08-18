@@ -6,29 +6,29 @@
 // ==========================================================
 // TODO: Reformat image function (e.g., PNG <-> JPEG <-> BMP)
 // ==========================================================
-extern "C" void reformat_image(const char* input_path, const char* output_ext) {
-    std::cout << "Reformating image..." << std::endl;
-
+extern "C" int reformat_image(const char* input_path, const char* output_ext) {
     if (!input_path || !output_ext) {
-        std::cerr << "Error: input_path or output_ext is null!" << std::endl;
-        return;
+        std::cerr << "X) Error: input_path or output_ext is null!" << std::endl;
+        return 1;
     }
 
     cv::Mat img = cv::imread(input_path, cv::IMREAD_UNCHANGED);
     if (img.empty()) {
-        std::cerr << "Error: Cannot read image " << input_path << std::endl;
-        return;
+        std::cerr << "X) Error: Cannot read image! " << input_path << std::endl;
+        return 1;
     }
 
     std::filesystem::path input_file(input_path);
     std::filesystem::path output_file = input_file.parent_path() / (input_file.stem().string() + "." + output_ext);
 
     if (!cv::imwrite(output_file.string(), img)) {
-        std::cerr << "Error: Cannot write image " << output_file << std::endl;
-        return;
+        std::cerr << "X) Error: Cannot write image " << output_file << std::endl;
+        return 1;
     }
 
     std::cout << "Image reformatted from " << input_path << " to " << output_file << std::endl;
+    std::cout << "O) Reformat complete!" << std::endl;
+    return 0;
 }
 
 // ==========================================================

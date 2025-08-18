@@ -26,7 +26,7 @@ video_lib.adjust_brightness_video.restype = None
 video_lib.batch_process_video.restype = None
 
 print("Testing image_converter:")
-image_lib.reformat_image(b"/Users/danny/Downloads/2025_7.png", b"jpg")
+image_lib.reformat_image()
 image_lib.resize_image()
 image_lib.crop_image()
 image_lib.rotate_image()
