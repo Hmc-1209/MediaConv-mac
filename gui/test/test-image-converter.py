@@ -23,7 +23,7 @@ image_lib.batch_process_image.restype = None
 print("\n===================================")
 print("Removing last generated files -->")
 print("===================================")
-last_generated_files = ["./pics/Lenna.png", "./pics/Lenna_resized100x100.jpg", "./pics/Lenna_crop50x50_100x100.jpg"]
+last_generated_files = ["./pics/Lenna.png", "./pics/Lenna_resized100x100.jpg", "./pics/Lenna_crop50x50_100x100.jpg", "./pics/Lenna_rot90.jpg"]
 for path in last_generated_files:
   if os.path.exists(path):
     os.remove(path)
@@ -56,4 +56,12 @@ if image_lib.resize_image(b"./pics/Lenna.jpg", 100, 100):
 print("---------------Crop----------------")
 print("Cropping Lenna.jpg to 50x50~100x100...")
 if image_lib.crop_image(b"./pics/Lenna.jpg", 50, 50, 100, 100):
+  print("Please checkout the log to see the issue.")
+
+# ---------------------------
+# Rotate image 90° clockwise
+# ---------------------------
+print("---------------Crop----------------")
+print("Rotating Lenna.jpg 90° clockwise...")
+if image_lib.rotate_image(b"./pics/Lenna.jpg", 90):
   print("Please checkout the log to see the issue.")

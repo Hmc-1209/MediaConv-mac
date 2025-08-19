@@ -105,8 +105,43 @@ extern "C" int crop_image(const char* input_path, int start_x, int start_y, int 
 // ==========================================================
 // TODO: Rotate image function
 // ==========================================================
-extern "C" void rotate_image() {
-    std::cout << "Image conversion function called!" << std::endl;
+extern "C" int rotate_image(const char* input_path, int angle) {
+    if (!input_path) {
+        std::cerr << "⚠ Error: input path is null!" << std::endl;
+        return 1;
+    }
+
+    cv::Mat img = cv::imread(input_path, cv::IMREAD_UNCHANGED);
+    if (img.empty()) {
+        std::cerr << "⚠ Error: Cannot read image! " << input_path << std::endl;
+        return 1;
+    }
+
+    cv::Mat rotated;
+    if (angle == 90) {
+        cv::rotate(img, rotated, cv::ROTATE_90_CLOCKWISE);
+    } else if (angle == 180) {
+        cv::rotate(img, rotated, cv::ROTATE_180);
+    } else if (angle == 270) {
+        cv::rotate(img, rotated, cv::ROTATE_90_COUNTERCLOCKWISE);
+    } else {
+        std::cerr << "⚠ Error: Unsupported rotation angle (" << angle << "). Use 90, 180, or 270." << std::endl;
+        return 1;
+    }
+
+    std::filesystem::path input_file(input_path);
+    std::string output_name = input_file.stem().string() + "_rot" + std::to_string(angle) +
+            input_file.extension().string();
+    std::filesystem::path output_file = input_file.parent_path() / output_name;
+
+    if (!cv::imwrite(output_file.string(), rotated)) {
+        std::cerr << "⚠ Error: Cannot write rotated image " << output_file << std::endl;
+        return 1;
+    }
+
+    std::cout << "Image rotated " << angle << "° and saved as " << output_file << std::endl;
+    std::cout << "✓ Rotate complete!" << std::endl;
+    return 0;
 }
 
 // ==========================================================
