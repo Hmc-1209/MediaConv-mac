@@ -3,8 +3,8 @@
 
 extern "C" {
     int reformat_image(const char* input_path, const char* output_ext);
-    void resize_image();
-    void crop_image();
+    int resize_image(const char* input_path, int width, int height);
+    int crop_image(const char* input_path, int start_x, int start_y, int width, int height);
     void rotate_image();
     void flip_image();
     void adjust_brightness_image();

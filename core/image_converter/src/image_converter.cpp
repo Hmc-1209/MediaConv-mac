@@ -8,13 +8,13 @@
 // ==========================================================
 extern "C" int reformat_image(const char* input_path, const char* output_ext) {
     if (!input_path || !output_ext) {
-        std::cerr << "X) Error: input_path or output_ext is null!" << std::endl;
+        std::cerr << "⚠ Error: input_path or output_ext is null!" << std::endl;
         return 1;
     }
 
     cv::Mat img = cv::imread(input_path, cv::IMREAD_UNCHANGED);
     if (img.empty()) {
-        std::cerr << "X) Error: Cannot read image! " << input_path << std::endl;
+        std::cerr << "⚠ Error: Cannot read image! " << input_path << std::endl;
         return 1;
     }
 
@@ -22,27 +22,84 @@ extern "C" int reformat_image(const char* input_path, const char* output_ext) {
     std::filesystem::path output_file = input_file.parent_path() / (input_file.stem().string() + "." + output_ext);
 
     if (!cv::imwrite(output_file.string(), img)) {
-        std::cerr << "X) Error: Cannot write image " << output_file << std::endl;
+        std::cerr << "⚠ Error: Cannot write image " << output_file << std::endl;
         return 1;
     }
 
     std::cout << "Image reformatted from " << input_path << " to " << output_file << std::endl;
-    std::cout << "O) Reformat complete!" << std::endl;
+    std::cout << "✓ Reformat complete!" << std::endl;
     return 0;
 }
 
 // ==========================================================
 // TODO: Resize image function
 // ==========================================================
-extern "C" void resize_image() {
-    std::cout << "Image conversion function called!" << std::endl;
+extern "C" int resize_image(const char* input_path, int width, int height) {
+    if (!input_path || width <= 0 || height <= 0) {
+        std::cerr << "⚠ Error: input path or size is null!" << std::endl;
+        return 1;
+    }
+
+    cv::Mat img = cv::imread(input_path, cv::IMREAD_UNCHANGED);
+    if (img.empty()) {
+        std::cerr << "⚠ Error: Cannot read image! " << input_path << std::endl;
+        return 1;
+    }
+
+    cv::Mat resized;
+    cv::resize(img, resized, cv::Size(width, height), 0, 0, cv::INTER_LINEAR);
+    std::filesystem::path input_file(input_path);
+    std::string output_name = input_file.stem().string() + "_resized" + std::to_string(width) + "x" +
+            std::to_string(height) + input_file.extension().string();
+    std::filesystem::path output_file = input_file.parent_path() / output_name;
+
+    if (!cv::imwrite(output_file.string(), resized)) {
+        std::cerr << "⚠ Error: Cannot write resized image " << output_file << std::endl;
+        return 1;
+    }
+
+    std::cout << "Image resized to " << width << "x" << height << " and saved as " << output_file << std::endl;
+    std::cout << "✓ Resize complete!" << std::endl;
+    return 0;
 }
 
 // ==========================================================
 // TODO: Crop image function
 // ==========================================================
-extern "C" void crop_image() {
-    std::cout << "Image conversion function called!" << std::endl;
+extern "C" int crop_image(const char* input_path, int start_x, int start_y, int width, int height) {
+    if (!input_path || start_x < 0 || start_y < 0 || width <= 0 || height <= 0) {
+        std::cerr << "⚠ Error: input path or size is null!" << std::endl;
+        return 1;
+    }
+
+    cv::Mat img = cv::imread(input_path, cv::IMREAD_UNCHANGED);
+    if (img.empty()) {
+        std::cerr << "⚠ Error: Cannot read image! " << input_path << std::endl;
+        return 1;
+    }
+
+    cv::Rect roi(start_x, start_y, width, height);
+    if (roi.x + roi.width > img.cols || roi.y + roi.height > img.rows) {
+        std::cerr << "⚠ Error: ROI out of image bounds!" << std::endl;
+        return 1;
+    }
+
+    cv::Mat cropped = img(roi);
+    std::filesystem::path input_file(input_path);
+    std::string output_name = input_file.stem().string() + "_crop" + std::to_string(start_x) + "x" +
+            std::to_string(start_y) + "_" + std::to_string(width) + "x" + std::to_string(height) +
+            input_file.extension().string();
+    std::filesystem::path output_file = input_file.parent_path() / output_name;
+
+    if (!cv::imwrite(output_file.string(), cropped)) {
+        std::cerr << "⚠ Error: Cannot write cropped image " << output_file << std::endl;
+        return 1;
+    }
+
+    std::cout << "Image cropped (" << width << "x" << height << " at "
+              << start_x << "," << start_y << ") and saved as " << output_file << std::endl;
+    std::cout << "✓ Crop complete!" << std::endl;
+    return 0;
 }
 
 // ==========================================================
