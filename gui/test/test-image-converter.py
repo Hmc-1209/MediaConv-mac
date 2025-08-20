@@ -39,7 +39,7 @@ print("===================================")
 # ---------------------------
 print("-------------Reformat--------------")
 print("Reformatting Lenna.jpg to Lenna.png...")
-if image_lib.reformat_image(b"./pics/Lenna.jpg", b"png"):
+if image_lib.reformat_image(b"./pics/Lenna.jpg", b"png", 0):
   print("Please checkout the log to see the issue.")
 
 # ---------------------------
@@ -47,7 +47,7 @@ if image_lib.reformat_image(b"./pics/Lenna.jpg", b"png"):
 # ---------------------------
 print("--------------Resize---------------")
 print("Resizing Lenna.jpg to 100*100px...")
-if image_lib.resize_image(b"./pics/Lenna.jpg", 100, 100):
+if image_lib.resize_image(b"./pics/Lenna.jpg", 100, 100, 0):
   print("Please checkout the log to see the issue.")
 
 # ---------------------------
@@ -55,13 +55,21 @@ if image_lib.resize_image(b"./pics/Lenna.jpg", 100, 100):
 # ---------------------------
 print("---------------Crop----------------")
 print("Cropping Lenna.jpg to 50x50~100x100...")
-if image_lib.crop_image(b"./pics/Lenna.jpg", 50, 50, 100, 100):
+if image_lib.crop_image(b"./pics/Lenna.jpg", 50, 50, 100, 100, 0):
   print("Please checkout the log to see the issue.")
 
 # ---------------------------
 # Rotate image 90° clockwise
 # ---------------------------
-print("---------------Crop----------------")
+print("--------------Rotate---------------")
 print("Rotating Lenna.jpg 90° clockwise...")
-if image_lib.rotate_image(b"./pics/Lenna.jpg", 90):
+if image_lib.rotate_image(b"./pics/Lenna.jpg", 90, 0):
+  print("Please checkout the log to see the issue.")
+
+# ---------------------------
+# Flip image horizontally
+# ---------------------------
+print("---------------Flip----------------")
+print("Rotating Lenna.jpg 90° clockwise...")
+if image_lib.rotate_image(b"./pics/Lenna.jpg", 90, 0):
   print("Please checkout the log to see the issue.")
