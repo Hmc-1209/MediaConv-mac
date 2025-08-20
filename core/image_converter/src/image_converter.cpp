@@ -58,12 +58,11 @@ extern "C" int resize_image(const char* input_path, int width, int height, int o
     cv::resize(img, resized, cv::Size(width, height), 0, 0, cv::INTER_LINEAR);
     std::filesystem::path input_file(input_path);
     std::filesystem::path output_file  = input_file;
-    if (overwrite) {
+    if (!overwrite) {
         std::string output_name = input_file.stem().string() + "_resized" + std::to_string(width) + "x" +
                                   std::to_string(height) + input_file.extension().string();
         output_file = input_file.parent_path() / output_name;
     }
-
 
     if (!cv::imwrite(output_file.string(), resized)) {
         std::cerr << "⚠ Error: Cannot write resized image " << output_file << std::endl;
@@ -99,7 +98,7 @@ extern "C" int crop_image(const char* input_path, int start_x, int start_y, int 
     cv::Mat cropped = img(roi);
     std::filesystem::path input_file(input_path);
     std::filesystem::path output_file = input_file;
-    if (overwrite) {
+    if (!overwrite) {
         std::string output_name = input_file.stem().string() + "_crop" + std::to_string(start_x) + "x" +
                                   std::to_string(start_y) + "_" + std::to_string(width) + "x" +
                                   std::to_string(height) + input_file.extension().string();
@@ -147,7 +146,7 @@ extern "C" int rotate_image(const char* input_path, int angle, int overwrite) {
 
     std::filesystem::path input_file(input_path);
     std::filesystem::path output_file = input_file;
-    if (overwrite) {
+    if (!overwrite) {
         std::string output_name = input_file.stem().string() + "_rot" + std::to_string(angle) +
                                   input_file.extension().string();
         output_file = input_file.parent_path() / output_name;
@@ -191,7 +190,7 @@ extern "C" int flip_image(const char* input_path, int direction, int overwrite) 
 
     std::filesystem::path input_file(input_path);
     std::filesystem::path output_file = input_file;
-    if (overwrite) {
+    if (!overwrite) {
         std::string output_name = input_file.stem().string() + "_flip" + (direction == 0 ? "H" : "V") +
                                   input_file.extension().string();
         output_file = input_file.parent_path() / output_name;
@@ -227,7 +226,7 @@ extern "C" int adjust_brightness_image(const char* input_path, double alpha, int
     img.convertTo(adjusted, -1, alpha, beta);
     std::filesystem::path input_file(input_path);
     std::filesystem::path output_file = input_file;
-    if (overwrite) {
+    if (!overwrite) {
         std::string output_name = input_file.stem().string() + "_adj_c" + std::to_string(alpha) +
                                   "_b" + std::to_string(beta) + input_file.extension().string();
         output_file = input_file.parent_path() / output_name;

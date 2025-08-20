@@ -11,11 +11,10 @@ build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../core/
 image_lib = ctypes.CDLL(os.path.join(build_dir, "libimage_converter.dylib"))
 image_lib.reformat_image.restype = int
 image_lib.resize_image.restype = int
-image_lib.crop_image.restype = None
-image_lib.rotate_image.restype = None
-image_lib.flip_image.restype = None
-image_lib.adjust_brightness_image.restype = None
-image_lib.batch_process_image.restype = None
+image_lib.crop_image.restype = int
+image_lib.rotate_image.restype = int
+image_lib.flip_image.restype = int
+image_lib.adjust_brightness_image.restype = int
 
 # ---------------------------
 # Remove last generated files
@@ -23,7 +22,8 @@ image_lib.batch_process_image.restype = None
 print("\n===================================")
 print("Removing last generated files -->")
 print("===================================")
-last_generated_files = ["./pics/Lenna.png", "./pics/Lenna_resized100x100.jpg", "./pics/Lenna_crop50x50_100x100.jpg", "./pics/Lenna_rot90.jpg"]
+last_generated_files = ["./pics/Lenna.png", "./pics/Lenna_resized100x100.jpg", "./pics/Lenna_crop50x50_100x100.jpg", "./pics/Lenna_rot90.jpg",
+                        "./pics/Lenna_flipV.jpg", "./pics/Lenna_adj_c1.600000_b30.jpg"]
 for path in last_generated_files:
   if os.path.exists(path):
     os.remove(path)
@@ -70,6 +70,14 @@ if image_lib.rotate_image(b"./pics/Lenna.jpg", 90, 0):
 # Flip image horizontally
 # ---------------------------
 print("---------------Flip----------------")
-print("Rotating Lenna.jpg 90° clockwise...")
-if image_lib.rotate_image(b"./pics/Lenna.jpg", 90, 0):
+print("Flipping Lenna.jpg horizontally...")
+if image_lib.flip_image(b"./pics/Lenna.jpg", 1, 0):
+  print("Please checkout the log to see the issue.")
+
+# ----------------------------------
+# Adjust image brightness & contrast
+# ----------------------------------
+print("--------------Adjust---------------")
+print("Adjusting Lenna.jpg's brightness and contrast...")
+if image_lib.adjust_brightness_image(b"./pics/Lenna.jpg", ctypes.c_double(1.6), 30, 0):
   print("Please checkout the log to see the issue.")
