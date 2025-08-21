@@ -10,11 +10,11 @@ find_package(OpenCV REQUIRED)
 # library: image_converter
 # ============================
 add_library(image_converter SHARED
-    image_converter/src/image_converter.cpp
+        image_converter/src/image_converter.cpp
 )
 target_include_directories(image_converter PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/image_converter/include
-    ${OpenCV_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/image_converter/include
+        ${OpenCV_INCLUDE_DIRS}
 )
 target_link_libraries(image_converter PRIVATE ${OpenCV_LIBS})
 
@@ -22,20 +22,17 @@ target_link_libraries(image_converter PRIVATE ${OpenCV_LIBS})
 # library: video_converter
 # ============================
 add_library(video_converter SHARED
-    video_converter/src/video_converter.cpp
+        video_converter/src/video_converter.cpp
 )
 target_include_directories(video_converter PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/video_converter/include
-    ${OpenCV_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/video_converter/include
 )
-target_link_libraries(video_converter PRIVATE ${OpenCV_LIBS})
-
 # ============================
 # installation rules
 # ============================
 install(TARGETS image_converter video_converter
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        PUBLIC_HEADER DESTINATION include
 )

@@ -12,19 +12,28 @@ extern "C" int reformat_image(const char* input_path, const char* output_ext, in
         return 1;
     }
 
+    std::filesystem::path input_file(input_path);
+    std::string input_ext = input_file.extension().string();
+    if (!input_ext.empty() && input_ext[0] == '.') input_ext = input_ext.substr(1);
+
+    if (input_ext == output_ext) {
+        std::cerr << "⚠ Error: Input and output formats are the same (" << input_ext << ")!" << std::endl;
+        return 1;
+    }
+
     cv::Mat img = cv::imread(input_path, cv::IMREAD_UNCHANGED);
     if (img.empty()) {
         std::cerr << "⚠ Error: Cannot read image! " << input_path << std::endl;
         return 1;
     }
 
-    std::filesystem::path input_file(input_path);
     std::filesystem::path output_file = input_file.parent_path() / (input_file.stem().string() + "." + output_ext);
 
     if (!cv::imwrite(output_file.string(), img)) {
         std::cerr << "⚠ Error: Cannot write image " << output_file << std::endl;
         return 1;
     }
+
     if (overwrite) {
         try {
             std::filesystem::remove(input_file);

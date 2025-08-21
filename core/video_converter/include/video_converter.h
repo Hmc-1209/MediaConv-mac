@@ -2,7 +2,7 @@
 #define VIDEO_CONVERTER_H
 
 extern "C" {
-    void reformat_video();
+    int reformat_video(const char* input_path, const char* output_ext, int overwrite);
     void resize_video();
     void crop_video();
     void rotate_video();
