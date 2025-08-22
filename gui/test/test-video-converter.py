@@ -10,7 +10,7 @@ build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../core/
 # ---------------------------
 video_lib = ctypes.CDLL(os.path.join(build_dir, "libvideo_converter.dylib"))
 video_lib.reformat_video.restype = int
-video_lib.resize_video.restype = None
+video_lib.resize_video.restype = int
 video_lib.crop_video.restype = None
 video_lib.rotate_video.restype = None
 video_lib.flip_video.restype = None
@@ -33,10 +33,18 @@ print("\n===================================")
 print("Beginning Video Converter test -->")
 print("===================================")
 
-# ---------------------------
+# ----------------------------------
 # Reformat video to different format
-# ---------------------------
+# ----------------------------------
 print("-------------Reformat Video--------------")
 print(f"Reformatting bbb_short.mkv to bbb_short.mp4...")
 if video_lib.reformat_video(b"./vids/bbb_short.mkv", b"mp4", 0):
+  print("Please checkout the log to see the issue.")
+
+# ----------------------------------
+# Resize video to 200x200px
+# ----------------------------------
+print("--------------Resize Video---------------")
+print(f"Resizing bbb_short.mkv to 200x200px...")
+if video_lib.resize_video(b"./vids/bbb_short.mkv", 200, 200, 0):
   print("Please checkout the log to see the issue.")
