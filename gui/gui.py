@@ -1,11 +1,18 @@
 import sys
 import os
+import ctypes
 from pathlib import Path
+from ctypes import cdll, c_char_p, c_int, c_double
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QFileDialog, QCheckBox, QGridLayout, QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox,
-    QVBoxLayout, QLabel, QPushButton, QTabWidget, QHBoxLayout, QListWidget, QSizePolicy, QListWidgetItem
+    QVBoxLayout, QLabel, QPushButton, QTabWidget, QHBoxLayout, QListWidget, QSizePolicy, QListWidgetItem, QButtonGroup, QRadioButton
 )
 from PyQt6.QtCore import Qt
+
+build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../core/build"))
+image_lib = ctypes.CDLL(os.path.join(build_dir, "libimage_converter.dylib"))
+image_lib.reformat_image.restype = int
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -36,7 +43,7 @@ class MainWindow(QMainWindow):
         # ============================
         # Image Tab Settings
         # ============================
-        image_tab = QWidget()
+        self.image_tab = QWidget()
         image_layout = QVBoxLayout()
         top_layout = QHBoxLayout()
 
@@ -65,16 +72,16 @@ class MainWindow(QMainWindow):
         image_top_right_layout = QVBoxLayout(image_top_right_widget)
         image_top_right_layout.setContentsMargins(0, 0, 0, 0)
         # Output Path row
-        image_path_layout = QHBoxLayout()
-        image_output_path_label = QLabel("Output Path:")
-        image_output_path_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        image_output_path_label.setStyleSheet("margin-right: 0px;")
-        self.image_output_path_btn = QPushButton(str(Path.home() / "Downloads"))
-        self.image_output_path_btn.setStyleSheet("")
-        image_path_layout.addStretch(1)
-        image_path_layout.addWidget(image_output_path_label, alignment=Qt.AlignmentFlag.AlignLeft)
-        image_path_layout.addWidget(self.image_output_path_btn, alignment=Qt.AlignmentFlag.AlignLeft)
-        image_top_right_layout.addLayout(image_path_layout, stretch=1)
+        # image_path_layout = QHBoxLayout()
+        # image_output_path_label = QLabel("Output Path:")
+        # image_output_path_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        # image_output_path_label.setStyleSheet("margin-right: 0px;")
+        # self.image_output_path_btn = QPushButton(str(Path.home() / "Downloads"))
+        # self.image_output_path_btn.setStyleSheet("")
+        # image_path_layout.addStretch(1)
+        # image_path_layout.addWidget(image_output_path_label, alignment=Qt.AlignmentFlag.AlignLeft)
+        # image_path_layout.addWidget(self.image_output_path_btn, alignment=Qt.AlignmentFlag.AlignLeft)
+        # image_top_right_layout.addLayout(image_path_layout, stretch=1)
         # Overwrite/Delete checkbox row
         image_checkbox_layout = QHBoxLayout()
         image_checkbox_layout.addStretch(1)
@@ -82,13 +89,13 @@ class MainWindow(QMainWindow):
         image_checkbox_layout.addWidget(self.image_delete_checkbox, alignment=Qt.AlignmentFlag.AlignLeft)
         image_top_right_layout.addLayout(image_checkbox_layout, stretch=1)
         # Process button row
-        image_process_layout = QHBoxLayout()
-        image_process_layout.addStretch(1)
+        self.image_process_layout = QHBoxLayout()
+        self.image_process_layout.addStretch(1)
         self.image_process_btn = QPushButton("Process")
-        image_process_layout.addWidget(self.image_process_btn, alignment=Qt.AlignmentFlag.AlignLeft)
-        image_top_right_layout.addLayout(image_process_layout, stretch=1)
+        self.image_process_layout.addWidget(self.image_process_btn, alignment=Qt.AlignmentFlag.AlignLeft)
+        image_top_right_layout.addLayout(self.image_process_layout, stretch=1)
         image_top_right_widget.setMinimumWidth(200)
-        self.image_output_path_btn.clicked.connect(self.select_output_path)
+        # self.image_output_path_btn.clicked.connect(self.select_output_path)
 
         # --- Combine Top Layout ---
         top_layout.addLayout(image_top_left_layout, stretch=1)
@@ -101,20 +108,23 @@ class MainWindow(QMainWindow):
         image_ops_grid.setHorizontalSpacing(15)
         image_ops_grid.setVerticalSpacing(15)
         image_ops_grid.setContentsMargins(0, 0, 0, 0)
+        self.image_ops_group = QButtonGroup()
+        self.image_ops_group.setExclusive(True)
         # Row 0, Column 0: Reformat
-        self.image_reformat_cb = QCheckBox("Reformat")
+        self.image_reformat_rb = QRadioButton("Reformat")
         self.image_reformat_input = QComboBox()
         self.image_reformat_input.addItems(["png", "jpg", "bmp", "tiff", "webp"])
         self.image_reformat_input.setMaximumWidth(80)
         image_reformat_layout = QHBoxLayout()
-        image_reformat_layout.addWidget(self.image_reformat_cb)
+        image_reformat_layout.addWidget(self.image_reformat_rb)
         image_reformat_layout.addWidget(self.image_reformat_input)
         image_reformat_layout.addStretch()
         image_reformat_widget = QWidget()
         image_reformat_widget.setLayout(image_reformat_layout)
         image_ops_grid.addWidget(image_reformat_widget, 0, 0)
+        self.image_ops_group.addButton(self.image_reformat_rb, 1)
         # Row 0, Column 1: Resize
-        self.image_resize_cb = QCheckBox("Resize")
+        self.image_resize_rb = QRadioButton("Resize")
         self.image_resize_width = QSpinBox()
         self.image_resize_width.setRange(1, 10000)
         self.image_resize_width.setMaximumWidth(60)
@@ -122,7 +132,7 @@ class MainWindow(QMainWindow):
         self.image_resize_height.setRange(1, 10000)
         self.image_resize_height.setMaximumWidth(60)
         image_resize_layout = QHBoxLayout()
-        image_resize_layout.addWidget(self.image_resize_cb)
+        image_resize_layout.addWidget(self.image_resize_rb)
         image_resize_layout.addWidget(QLabel("W:"))
         image_resize_layout.addWidget(self.image_resize_width)
         image_resize_layout.addWidget(QLabel("H:"))
@@ -131,14 +141,15 @@ class MainWindow(QMainWindow):
         image_resize_widget = QWidget()
         image_resize_widget.setLayout(image_resize_layout)
         image_ops_grid.addWidget(image_resize_widget, 0, 1)
+        self.image_ops_group.addButton(self.image_resize_rb, 2)
         # Row 1, Column 1: Rotate
-        self.image_rotate_cb = QCheckBox("Rotate")
+        self.image_rotate_rb = QRadioButton("Rotate")
         self.image_rotate_combo = QComboBox()
         self.image_rotate_combo.addItems(["90", "180", "270"])
         self.image_rotate_combo.setMaximumWidth(80)
         image_rotate_layout = QVBoxLayout()
         image_rotate_row_layout = QHBoxLayout()
-        image_rotate_row_layout.addWidget(self.image_rotate_cb)
+        image_rotate_row_layout.addWidget(self.image_rotate_rb)
         image_rotate_row_layout.addWidget(self.image_rotate_combo)
         image_rotate_row_layout.addStretch()
         image_rotate_layout.addLayout(image_rotate_row_layout)
@@ -146,20 +157,22 @@ class MainWindow(QMainWindow):
         image_rotate_widget = QWidget()
         image_rotate_widget.setLayout(image_rotate_layout)
         image_ops_grid.addWidget(image_rotate_widget, 1, 0)
-        # Row 2, Column 0: Rotate
-        self.image_flip_cb = QCheckBox("Flip")
+        self.image_ops_group.addButton(self.image_rotate_rb, 3)
+        # Row 2, Column 0: Flip
+        self.image_flip_rb = QRadioButton("Flip")
         self.image_flip_combo = QComboBox()
         self.image_flip_combo.addItems(["Horizontal", "Vertical"])
         self.image_flip_combo.setMaximumWidth(100)
         image_flip_layout = QHBoxLayout()
-        image_flip_layout.addWidget(self.image_flip_cb)
+        image_flip_layout.addWidget(self.image_flip_rb)
         image_flip_layout.addWidget(self.image_flip_combo)
         image_flip_layout.addStretch()
         image_flip_widget = QWidget()
         image_flip_widget.setLayout(image_flip_layout)
         image_ops_grid.addWidget(image_flip_widget, 1, 1)
+        self.image_ops_group.addButton(self.image_flip_rb, 4)
         # Row 1, Column 0: Crop
-        self.image_crop_cb = QCheckBox("Crop")
+        self.image_crop_rb = QRadioButton("Crop")
         self.image_crop_start_x = QSpinBox()
         self.image_crop_start_x.setRange(0, 10000)
         self.image_crop_start_x.setMaximumWidth(60)
@@ -175,7 +188,7 @@ class MainWindow(QMainWindow):
         self.image_crop_height.setRange(1, 10000)
         self.image_crop_height.setMaximumWidth(60)
         image_crop_layout = QVBoxLayout()
-        image_crop_layout.addWidget(self.image_crop_cb)
+        image_crop_layout.addWidget(self.image_crop_rb)
         image_crop_xy_layout = QHBoxLayout()
         image_crop_xy_layout.addWidget(QLabel("X:"))
         image_crop_xy_layout.addWidget(self.image_crop_start_x)
@@ -193,8 +206,9 @@ class MainWindow(QMainWindow):
         image_crop_widget = QWidget()
         image_crop_widget.setLayout(image_crop_layout)
         image_ops_grid.addWidget(image_crop_widget, 2, 0)
+        self.image_ops_group.addButton(self.image_crop_rb, 5)
         # Row 1, Column 2: Adjust Brightness/Contrast
-        self.image_adjust_cb = QCheckBox("Adjust Brightness/Contrast")
+        self.image_adjust_rb = QRadioButton("Adjust Brightness/Contrast")
         self.image_alpha_spin = QDoubleSpinBox()
         self.image_alpha_spin.setRange(0.1, 5.0)
         self.image_alpha_spin.setSingleStep(0.1)
@@ -205,10 +219,10 @@ class MainWindow(QMainWindow):
         self.image_beta_spin.setValue(0)
         self.image_beta_spin.setMaximumWidth(60)
         image_adjust_layout = QVBoxLayout()
-        image_adjust_cb_layout = QHBoxLayout()
-        image_adjust_cb_layout.addWidget(self.image_adjust_cb)
-        image_adjust_cb_layout.addStretch()
-        image_adjust_layout.addLayout(image_adjust_cb_layout)
+        image_adjust_rb_layout = QHBoxLayout()
+        image_adjust_rb_layout.addWidget(self.image_adjust_rb)
+        image_adjust_rb_layout.addStretch()
+        image_adjust_layout.addLayout(image_adjust_rb_layout)
         image_adjust_params_layout = QHBoxLayout()
         image_adjust_params_layout.addWidget(QLabel("Alpha:"))
         image_adjust_params_layout.addWidget(self.image_alpha_spin)
@@ -219,14 +233,15 @@ class MainWindow(QMainWindow):
         image_adjust_widget = QWidget()
         image_adjust_widget.setLayout(image_adjust_layout)
         image_ops_grid.addWidget(image_adjust_widget, 2, 1, alignment=Qt.AlignmentFlag.AlignTop)
+        self.image_ops_group.addButton(self.image_adjust_rb, 6)
 
         image_bottom_layout.addLayout(image_ops_grid)
 
         # --- Assemble ---
         image_layout.addLayout(top_layout, stretch=1)
         image_layout.addLayout(image_bottom_layout, stretch=1)
-        image_tab.setLayout(image_layout)
-        tabs.addTab(image_tab, "Image")
+        self.image_tab.setLayout(image_layout)
+        tabs.addTab(self.image_tab, "Image")
 
         # ============================
         # Video Tab Settings
@@ -253,6 +268,7 @@ class MainWindow(QMainWindow):
             lambda: image_btn_delete.setEnabled(bool(self.image_list_widget.selectedItems()))
         )
         image_btn_delete.clicked.connect(self.delete_selected_image_item)
+        self.image_process_btn.clicked.connect(self.process_image_items)
 
 
     # ----------------------------
@@ -290,6 +306,60 @@ class MainWindow(QMainWindow):
         folder = QFileDialog.getExistingDirectory(self, "Select Output Folder", "")
         if folder:
             self.output_path_btn.setText(folder)
+
+    def process_image_items(self):
+        if not hasattr(self, 'image_processing_label'):
+            self.image_processing_label = QLabel("Processing...")
+            self.image_process_layout.insertWidget(0, self.image_processing_label)
+        self.image_processing_label.show()
+        self.image_process_btn.setEnabled(False)
+        process_failed = []
+        
+        QApplication.processEvents()
+        selected_id = self.image_ops_group.checkedId()
+        overwrite_flag = 1 if self.image_delete_checkbox.isChecked() else 0
+        if not self.image_items:
+            print("⚠ No input files to process!")
+            self.image_processing_label.hide()
+            self.image_process_btn.setEnabled(True)
+            return
+
+        for img_path in self.image_items:
+            if selected_id == 1:
+                output_ext = self.image_reformat_input.currentText().strip()
+                ret = image_lib.reformat_image(c_char_p(img_path.encode("utf-8")), c_char_p(output_ext.encode("utf-8")), overwrite_flag)
+            elif selected_id == 2:
+                width = self.image_resize_width.value()
+                height = self.image_resize_height.value()
+                ret = image_lib.resize_image(c_char_p(img_path.encode("utf-8")), width, height, overwrite_flag)
+            elif selected_id == 3:
+                angle = int(self.image_rotate_combo.currentText())
+                ret = image_lib.rotate_image(c_char_p(img_path.encode("utf-8")), angle, overwrite_flag)
+            elif selected_id == 4:
+                direction = 0 if self.image_flip_combo.currentText() == "Vertical" else 1
+                ret = image_lib.flip_image(c_char_p(img_path.encode("utf-8")), direction, overwrite_flag)
+            elif selected_id == 5:
+                start_x = self.image_crop_start_x.value()
+                start_y = self.image_crop_start_y.value()
+                width = self.image_crop_width.value()
+                height = self.image_crop_height.value()
+                ret = image_lib.crop_image(c_char_p(img_path.encode("utf-8")), start_x, start_y, width, height, overwrite_flag)
+            elif selected_id == 6:
+                alpha = c_double(self.image_alpha_spin.value())
+                beta = c_int(self.image_beta_spin.value())
+                ret = image_lib.adjust_brightness_image(c_char_p(img_path.encode("utf-8")), alpha, beta, overwrite_flag)
+            else:
+                ret = 0
+
+            if ret:
+                process_failed.append(f"⚠ Processing failed for {img_path}")
+            QApplication.processEvents()
+
+        self.image_processing_label.hide()
+        self.image_process_btn.setEnabled(True)
+        for i in process_failed:
+            print(i)
+
 
 
 if __name__ == "__main__":
