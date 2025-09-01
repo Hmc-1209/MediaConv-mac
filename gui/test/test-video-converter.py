@@ -11,10 +11,10 @@ build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../core/
 video_lib = ctypes.CDLL(os.path.join(build_dir, "libvideo_converter.dylib"))
 video_lib.reformat_video.restype = int
 video_lib.resize_video.restype = int
-video_lib.crop_video.restype = None
-video_lib.rotate_video.restype = None
-video_lib.flip_video.restype = None
-video_lib.adjust_brightness_video.restype = None
+video_lib.crop_video.restype = int
+video_lib.rotate_video.restype = int
+video_lib.flip_video.restype = int
+video_lib.adjust_brightness_video.restype = int
 
 # ---------------------------
 # Remove last generated files
