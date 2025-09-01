@@ -53,6 +53,21 @@ It provides a user-friendly interface for quick processing of both images and vi
 
 ---
 
+### Development
+
+MediaConv was developed with a focus on simplicity and file batch process on macOS Apple Silicon.
+
+**Frontend (GUI):**
+- Written in **Python** using **PyQt6** for the graphical interface.
+- Provides two tabs (Image/Video) processing for each operation.
+
+**Backend (Processing):**
+- Core media operations are implemented in **C++** and compiled into shared libraries (`libimage_converter.dylib`, `libvideo_converter.dylib`).
+- Image processing is handled using **OpenCV**.
+- Video processing is handled using **FFmpeg** executable file.
+
+---
+
 ## Notes
 
 - MediaConv is optimized for **batch processing**, making it suitable for handling multiple files quickly.
