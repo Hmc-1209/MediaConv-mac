@@ -50,6 +50,7 @@ It provides a user-friendly interface for quick processing of both images and vi
 6. Choose an output directory and whether to delete original files.
 7. Click **Process** to start processing.
 <img src="preview_pics/app_preview.png" width="512" height="512" alt="App Icon">
+
 ---
 
 ## Notes
@@ -63,3 +64,9 @@ It provides a user-friendly interface for quick processing of both images and vi
 ### License
 
 This project is released under the [MIT License](LICENSE).
+
+---
+
+### Contact
+
+For any questions or feedback regarding MediaConv, please feel free to get in touch with me.
